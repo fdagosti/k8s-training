@@ -9,6 +9,9 @@ spec:
     - name: weblog-pv-storage
       persistentVolumeClaim:
           claimName: weblog-pv-claim
+    - name: log-config
+      configMap:
+        name: fluentd-config
   containers:
   - name: webcont
     image: nginx
@@ -19,6 +22,11 @@ spec:
         name: weblog-pv-storage
   - name: fdlogger
     image: fluent/fluentd
+    env:
+      - name: FLUENTD_ARGS
+        value: -c /etc/fluentd-config/fluentd.conf
     volumeMounts:
       - mountPath: "/var/log"
         name: weblog-pv-storage
+      - name: log-config
+        mountPath: "/etc/fluentd-config"
